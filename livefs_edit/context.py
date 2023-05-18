@@ -147,8 +147,9 @@ class EditContext:
                 fs['fstype'], fs['fstype'], f'{mountpoint}/{relpath}',
                 options=fs['options']))
         resolv_conf = f'{mountpoint}/etc/resolv.conf'
-        os.rename(resolv_conf, resolv_conf + '.tmp')
-        shutil.copy('/etc/resolv.conf', resolv_conf)
+        if os.path.exists(resolv_conf):
+            os.rename(resolv_conf, resolv_conf + '.tmp')
+            shutil.copy('/etc/resolv.conf', resolv_conf)
 
         def _pre_repack():
             for mnt in reversed(mnts):
