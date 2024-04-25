@@ -190,6 +190,16 @@ def install_debs(ctxt, debs: List[str] = ()):
         ctxt.run(['umount', rootfs_path])
         os.unlink(rootfs_path)
 
+@register_action()
+def install_packages_live(ctxt, packages: List[str]):
+    # base = ctxt.edit_squashfs(get_squash_names(ctxt)[0])
+    rootfs = setup_rootfs(ctxt)
+    ctxt.run(['chroot', rootfs, 'apt-get', 'update'])
+    env = os.environ.copy()
+    env['DEBIAN_FRONTEND'] = 'noninteractive'
+    env['LANG'] = 'C.UTF-8'
+    ctxt.run(['chroot', rootfs, 'apt-get', 'install', '-y'] + packages, env=env)
+
 
 def rm_ro(func, path, _):
     """Clear readonly attribute and retry removal"""
